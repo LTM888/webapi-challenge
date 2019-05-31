@@ -3,14 +3,14 @@ const router = express.Router();
 
 const dbProject = require('../helpers/projectModel');
 
-router.get( "/", (req,res) => {
-  dbProject.get()
-    .then( project => {
-      res.status(200).json(project)
-    })
-    .catch( error => {
+router.get( "/", async(req,res) => {
+  try { 
+    const projects = await dbProject.get(res.body);
+    res.status(200).json(projects)
+  }
+    catch( error ) {
       res.status(500).json({error: {message: "sorry cound not past the action"}});
-    })
+    }
 });
 
 router.get("/:id", (req,res) => {

@@ -1,8 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
 
-const db = require('../data/dbConfig');
-
 const server = express();
 
 server.use(helmet());
@@ -10,6 +8,16 @@ server.use(express.json());
 
 const actionRouter = require('./Routes/actionrouter');
 const projectRouter = require('./Routes/projectrouter');
+  
+server.use('/api/actions', actionRouter);
+server.use('/api/projects', projectRouter);
+
+server.get("/", (req, res) => {
+  res.send("Time to get started")
+})
+
+module.exports = server;
+
 
 // server.get('/', async (req, res) => {
 //     try {
@@ -34,12 +42,3 @@ const projectRouter = require('./Routes/projectrouter');
 //   });
   
 //   module.exports = server;
-  
-server.use('./actions', actionRouter);
-server.use('./projects', projectRouter);
-
-server.get("/", (req, res) => {
-  res.send("Time to get started")
-})
-
-module.exports = server;

@@ -3,21 +3,44 @@ const router = express.Router();
 
 const dbActions = require("../helpers/actionModel");
 
-router.get('/', (req, res) => {
-    dbActions
-     .get()
-     .then(get => {
-         res.status(200).jason(action);
-     })
-     .catch(err => {
-         res.jason(500).jason({ errorMessage: "Unable to get this at this time"});
-     })
+
+router.get('/', async(req, res) => {
+    try {
+        const actions = await dbActions.get(res.body);
+        res.status(200).json(actions);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Unable to get this at this time'
+        });
+    }
+
 });
 
-router.post('/', (req,res) => {
+router.get('/:id', async (req, res) => {
+    try {
+      const dbActions = await dbActions.getById(req.params.id);
+  
+      if (hub) {
+        res.status(200).json(hub);
+      } else {
+        res.status(404).json({ message: 'ID not found' });
+      }
+    } catch (error) {
+      // log error to database
+      console.log(error);
+      res.status(500).json({
+        message: 'Error retrieving the ID',
+      });
+    }
+  });
+
+
+router.post('/:id/actions', (req,res) => {
+    
     const NewAction = req.body;
         
-    dbActions. insert(newAction)
+    dbActions.insert(newAction)
          .then( action => {
              res.status(200).jason(action)
          })
@@ -31,7 +54,7 @@ router.put('/:id', (req, res) => {
     const updateAction = req.body
     const id = req.params.id
 
-        dbActions.update(id, updateAction)
+        dbActions.OnUpdate(id, updateAction)
             .then( action => {
                 res.status(200).jason(action)
             })
@@ -44,7 +67,7 @@ router.put('/:id', (req, res) => {
         router.delete("/:id", (req,res) => {
             const actionid = req.params.id;
 
-            dbActions.remove(actionid)
+            dbActions.onDelete(actionid)
                 .then(action => {
                     if (action) {
                         dbActions.remove(actionid)
