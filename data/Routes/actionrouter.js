@@ -19,8 +19,8 @@ router.get('/', async(req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-      const dbAct = await dbActions.get(req.params.id);
-      if (dbAct) {
+      const action = await dbActions.get(res.params.id);
+      if (action) {
         res.status(200).json();
       } else {
         res.status(404).json({ message: 'ID not found' });
@@ -35,9 +35,10 @@ router.get('/:id', async (req, res) => {
   });
 
   router.post('/', async (req, res) => {
+    //   const action = req.body;
     try {
-      const dbAct= await dbActions.insert(res.body);
-      res.status(201).json(hub);
+      const action= await dbActions.insert(req.body);
+      res.status(201).json(action);
     } catch (error) {
       // log error to database
       console.log(error);
@@ -66,8 +67,8 @@ router.get('/:id', async (req, res) => {
   
   router.put('/:id', async (req, res) => {
     try {
-      const dbAct  = await dbActions.update(req.params.id, req.body);
-      if (dbActions) {
+      const action  = await dbActions.update(req.params.id, req.body);
+      if (action) {
         res.status(200).json(action);
       } else {
         res.status(404).json({ message: 'The id could not be found' });
@@ -101,49 +102,3 @@ router.get('/:id', async (req, res) => {
 
     
     
-        //     const NewAction = req.body;
-                
-        //     dbActions.insert(newAction)
-        //          .then( action => {
-        //              res.status(200).jason(action)
-        //          })
-        //          .catch(error => {
-        //              res.status(500).json({ error:{message:"Sorry did not go through"}});
-        
-        //          })
-        // });
-        
-        // router.put('/:id', (req, res) => {
-        //     const updateAction = req.body
-        //     const id = req.params.id
-        
-        //         dbActions.OnUpdate(id, updateAction)
-        //             .then( action => {
-        //                 res.status(200).jason(action)
-        //             })
-        //             .catch(error => {
-        //                 res.status(500).jason({ error: {message: " sorry this is a no go"}});
-        //             })
-        
-        //         });
-        
-        //         router.delete("/:id", (req,res) => {
-        //             const actionid = req.params.id;
-        
-        //             dbActions.onDelete(actionid)
-        //                 .then(action => {
-        //                     if (action) {
-        //                         dbActions.remove(actionid)
-        //                         .then(removeAction => {
-        //                             res.status(201).json(releaseEvents)
-        //                         })
-        //                     } else {
-        //                         res.status(404).jason({error:{message: "SOrry could not delete"}});
-        //                     }
-        //                 })
-        //                 .catch(error => {
-        //                     res.status(500).json({error: {message: "Unable to delete this item at this time"}});
-        //                 });
-        //             });
-                            
-            

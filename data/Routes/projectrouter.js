@@ -3,67 +3,100 @@ const router = express.Router();
 
 const dbProject = require('../helpers/projectModel');
 
-router.get( "/", async(req,res) => {
-  try { 
-    const projects = await dbProject.get(res.body);
-    res.status(200).json(projects)
+router.get('/', async(req, res) => {
+  try {
+      const projects = await dbProject.get(res.body);
+      res.status(200).json(projects);
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({
+          message: 'Unable to get this at this time'
+      });
   }
-    catch( error ) {
-      res.status(500).json({error: {message: "sorry cound not past the action"}});
+
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    const project = await dbProject.get(res.params.id);
+    if (project) {
+      res.status(200).json();
+    } else {
+      res.status(404).json({ message: 'ID not found' });
     }
+  } catch (error) {
+    // log error to database
+    console.log(error);
+    res.status(500).json({
+      message: 'Error retrieving the ID',
+    });
+  }
 });
 
-router.get("/:id", (req,res) => {
-  const id = req.params.id;
+router.post('/', async (req, res) => {
+  //   const project = req.body;
+  try {
+    const project= await dbProject.insert(req.body);
+    res.status(201).json(project);
+  } catch (error) {
+    // log error to database
+    console.log(error);
+    res.status(500).json({
+      message: 'Error adding the id',
+    });
+  }
+});
 
-  dbProject.getProjectActions(id)
-    .then(projectActions => {
-      res.status(200).json(projectActions);
+router.delete('/:id', async (req, res) => {
+  try {
+    const count = await dbProject.remove(req.params.id);
+    if (count > 0) {
+      res.status(200).json({ message: 'The id has been nuked' });
+    } else {
+      res.status(404).json({ message: 'The id could not be found' });
+    }
+  } catch (error) {
+    // log error to database
+    console.log(error);
+    res.status(500).json({
+      message: 'Error removing the id',
+    });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+    const project  = await dbProject.update(req.params.id, req.body);
+    if (project) {
+      res.status(200).json(project);
+    } else {
+      res.status(404).json({ message: 'The id could not be found' });
+    }
+  } catch (error) {
+    // log error to database
+    console.log(error);
+    res.status(500).json({
+      message: 'Error updating the id',
+    });
+  }
+});
+
+// /api//:id/messages
+router.get('/:id/projects', (req, res) => {
+  dbProject.get(req.params.id)
+    .then(projects => {
+      res.status(200).json(projects);
     })
     .catch(error => {
-      res.status(500).json({error: { message: "Sorry this action is a no go"}});
-    })
+      res.status(500).json(error);
+    });
 });
 
-router.post("/", (req, res) => {
-  const newProject = req.body;
-  dbProject.insert(newProject)
-  .then(action => {
-    res.status(500).json({error:{message: "Sorry this action is a no go"}});
-  });
-});
 
-router.put("/:id", (req, res) => {
-  const updateProject = req.body;
-  const id = req.param.id;
 
-  dbProject.update(id, updateProject)
-    .then( project => {
-      res.status(200).json(project)
-    })
-    .catch(error => {
-      res.status(500).json({error:{message: "Sorry still a no go"}});
-    })
-});
+// 
 
-router.delete("/:id", (req,res) => {
-  const projectid = req.params.id;
 
-  dbProject.remove(projectid)
-    .then(project => {
-      if (project) {
-        dbProject.remove(project)
-        .then(removeProject => {
-          res.status(201).json(removeProject)
-        })
-      } else {
-        res.status(404).json({error:{message:"Sorry still a no go"}});
-      }
-    })
-    .catch(error => {
-      res.status(500).json({error:{message:"Sorry still a no go" }});
-    })
-});
-
+  module.exports = router;
 module.exports = router;
 
